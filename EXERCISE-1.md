@@ -341,7 +341,11 @@ To create a table entry object:
 ```
 P4Runtime sh >>> te = table_entry["P4INFO-TABLE-NAME"](action = "<P4INFO-ACTION-NAME>")
 ```
-
+for instance, 
+```
+P4Runtime sh >>> te = table_entry["IngressPipeImpl.l2_exact_table"](action = "IngressPipe.set_egress_port")
+```
+To execute the above you need to obtain the correct table names where you would like to make entries. maybe use, tables to see available tables and actions.
 Make sure to use the fully qualified name for each entity, e.g.
 `IngressPipeImpl.l2_exact_table`, `IngressPipeImpl.set_egress_port`, etc.
 
@@ -349,6 +353,10 @@ To specify a match field:
 
 ```
 P4Runtime sh >>> te.match["P4INFO-MATCH-FIELD-NAME"] = ("VALUE")
+```
+Like,
+```
+P4Runtime sh >>> te.match["hdr.ethernet.dst_addr"] = ("00:00:00:00:00:1B")
 ```
 
 `VALUE` can be a MAC address expressed in Colon-Hexadecimal notation
@@ -361,7 +369,10 @@ The specify the values for the table entry action parameters:
 ```
 P4Runtime sh >>> te.action["P4INFO-ACTION-PARAM-NAME"] = ("VALUE")
 ```
-
+To obtain the param name you need to look into the p4info file... search for the action name for the very specific table name and there you find action block and this further gives you the param name again one action... the param name you want to use can be used from here. Like so, 
+```
+P4Runtime sh >>> te.action["port_num"] = ("4")
+```
 You can show the table entry object in Protobuf Text format, using the `print`
 command:
 
@@ -380,6 +391,7 @@ P4Runtime sh >>> te.insert()
 
 To read table entries from the switch (this will issue a P4Runtime Read RPC):
 
+Also, every time you need to make an entry you need to specify the table name all over again and repeat
 ```
 P4Runtime sh >>> for te in table_entry["P4INFO-TABLE-NAME"].read():
             ...:     print(te)
